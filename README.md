@@ -200,7 +200,7 @@ numbertheory/
 ```bibtex
 @misc{ttpc_cca_lean,
   title        = {Toroidal Theory of Prime Numbers and Chord-Cumulant Algebra (TTPC--CCA) in Lean 4},
-  author       = {The Numbertheory Authors},
+  author       = {Andrei Lukianchikov},
   year         = {2026},
   howpublished = {\url{https://github.com/<owner>/numbertheory}},
   note         = {Formalisation in Lean 4 with Mathlib}
