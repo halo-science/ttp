@@ -151,7 +151,7 @@ SORRY=0
 ## 5. Структура репозитория
 
 ```
-numbertheory/
+ttpc_lean/
 ├── Numbertheory.lean              # корневой модуль (импортирует все разделы)
 ├── Numbertheory/
 │   ├── Basic.lean                 # шаблонный модуль Lake
