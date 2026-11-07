@@ -100,6 +100,24 @@ TTPC заменяет эту модель на **геометрию тора**:
 - Mathlib, закреплённый в `lakefile.toml` (тег `v4.35.0`);
 - ~8 GB свободного дискового пространства (Mathlib cache + сборка).
 
+### Установка с нуля (Ubuntu 24.04 / WSL2)
+
+```bash
+# 1. Системные зависимости
+sudo apt-get update
+sudo apt-get install -y curl git build-essential
+
+# 2. Менеджер версий Lean (пропустите, если elan уже установлен)
+curl https://elan.lean-lang.org/elan-init.sh -sSf | sh -s -- -y
+source "$HOME/.elan/env"
+
+# 3. Клонирование и сборка
+git clone <URL-репозитория> ttpc_lean
+cd ttpc_lean
+lake exe cache get   # ≈ 6–7 GB olean-файлов Mathlib
+lake build
+```
+
 ### Команды
 
 ```bash
@@ -116,6 +134,17 @@ lake env lean path/to/File.lean
 
 Полезно для локальной проверки лемм: `lake exe cache get` идемпотентен и догружает
 только отсутствующие артефакты.
+
+### Открытие проекта в WSL и VS Code
+
+| Способ | Команда / путь |
+|---|---|
+| Терминал WSL | `wsl --cd ~/ttpc_lean` |
+| Проводник Windows | `\\wsl.localhost\Ubuntu-24.04\home\gosudar\ttpc_lean` |
+| VS Code (Remote-WSL) | `code --remote wsl+Ubuntu-24.04 ~/ttpc_lean` |
+
+Расширение `leanprover.lean4` должно быть установлено **в WSL-remote** (не локально),
+иначе language server не увидит toolchain и Mathlib.
 
 ---
 
@@ -206,3 +235,6 @@ ttpc_lean/
   note         = {Formalisation in Lean 4 with Mathlib}
 }
 ```
+
+> При публикации замените `<owner>` в BibTeX и URL репозитория на фактический
+> GitHub-аккаунт (`https://github.com/<owner>/ttpc_lean`).
