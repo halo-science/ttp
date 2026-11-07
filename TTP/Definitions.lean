@@ -10,20 +10,20 @@ public import Mathlib.Data.Nat.Prime.Nth
 public import Mathlib.Data.ZMod.Basic
 
 /-!
-# Глава 1 ТТПЧ
+# Глава 1 ТТП
 
 Базовые определения: праймориал, праймориальный тор и копрайм-кристалл.
 -/
 
 @[expose] public section
 
-namespace TTPC
+namespace TTP
 
 open Nat
 
 /--
 Праймориал p_k#: произведение первых k простых чисел
-(соответствует Главе 1 ТТПЧ).
+(соответствует Главе 1 ТТП).
 -/
 noncomputable def primorial : ℕ → ℕ
   | 0 => 1
@@ -48,4 +48,4 @@ theorem crystal_coprime (k : ℕ) (x : CoprimeCrystal k) :
     Nat.Coprime (x.1.val) (primorial k) := by
   exact ZMod.val_coe_unit_coprime x
 
-end TTPC
+end TTP

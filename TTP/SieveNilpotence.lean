@@ -9,11 +9,11 @@ public import Mathlib.Data.List.Basic
 public import Mathlib.Algebra.BigOperators.Group.List.Lemmas
 public import Mathlib.Algebra.Order.BigOperators.Group.List
 public import Mathlib.Data.Nat.Prime.Basic
-public import Numbertheory.Definitions
-public import Numbertheory.ChordCharge
+public import TTP.Definitions
+public import TTP.ChordCharge
 
 /-!
-# Аксиома IV ТТПЧ: конечная нильпотентность решета
+# Аксиома IV ТТП: конечная нильпотентность решета
 
 Ситовые факторизации числа `n` на `m` сомножителей, каждый из которых не меньше
 ситовой границы `B ≥ 2`. Если `n < B^m`, допустимых факторизаций не существует:
@@ -22,7 +22,7 @@ public import Numbertheory.ChordCharge
 
 @[expose] public section
 
-namespace TTPC
+namespace TTP
 
 /-- Допустимая ситовая факторизация `n` на `m` сомножителей, каждый из которых `≥ B`. -/
 def IsSieveFactorization (B m n : ℕ) (L : List ℕ) : Prop :=
@@ -37,7 +37,7 @@ theorem sieve_factorization_pow_le (B m n : ℕ) (L : List ℕ)
   subst n
   exact List.pow_length_le_prod L B hB
 
-/-- Главная теорема о нильпотентности сита (Аксиома IV ТТПЧ): при `n < B^m`
+/-- Главная теорема о нильпотентности сита (Аксиома IV ТТП): при `n < B^m`
 допустимых ситовых факторизаций длины `m` не существует. -/
 theorem sieve_nilpotent (B m n : ℕ) (hn : n < B ^ m) (L : List ℕ)
     (h : IsSieveFactorization B m n L) : False := by
@@ -74,4 +74,4 @@ theorem prime_factorization_length_one {p m : ℕ} (hp : p.Prime) (L : List ℕ)
     have hb_le : b ≤ 1 := Nat.le_of_dvd (by norm_num) ⟨t.prod, h2.symm⟩
     omega
 
-end TTPC
+end TTP

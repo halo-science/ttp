@@ -7,9 +7,9 @@ module
 
 public import Mathlib.Data.Nat.Prime.Basic
 public import Mathlib.Data.Nat.Squarefree
-public import Numbertheory.Definitions
-public import Numbertheory.ChordCharge
-public import Numbertheory.SieveNilpotence
+public import TTP.Definitions
+public import TTP.ChordCharge
+public import TTP.SieveNilpotence
 
 /-!
 # Точное решето: замыкание алгебры и горизонта сита
@@ -21,7 +21,7 @@ public import Numbertheory.SieveNilpotence
 
 @[expose] public section
 
-namespace TTPC
+namespace TTP
 
 /-- Устранение составного шума: бесквадратное `n > 1`, у которого круговой
 заряд не равен `1`, обязано быть простым (ср. `Λ n = 0`). -/
@@ -47,7 +47,7 @@ theorem prime_of_sieve_horizon {B n : ℕ} (hB : 2 ≤ B) (hn1 : 1 < n) (hn : n 
   have hsq2 : B ^ 2 ≤ n.minFac ^ 2 := Nat.pow_le_pow_left hBle 2
   omega
 
-/-- Итоговая связка ТТПЧ: число, пережившее первичное сито до горизонта `B^2`,
+/-- Итоговая связка ТТП: число, пережившее первичное сито до горизонта `B^2`,
 имеет хордовый заряд, строго равный его простому значению. -/
 theorem sieve_exact_identity {B p : ℕ} (hB : 2 ≤ B) (hp1 : 1 < p) (hp : p < B ^ 2)
     (h_div : ∀ q, q.Prime → q ∣ p → B ≤ q) :
@@ -55,4 +55,4 @@ theorem sieve_exact_identity {B p : ℕ} (hB : 2 ≤ B) (hp1 : 1 < p) (hp : p < 
   have hpp : p.Prime := prime_of_sieve_horizon hB hp1 hp h_div
   exact @cyclotomicEvalOne_prime p (Fact.mk hpp)
 
-end TTPC
+end TTP

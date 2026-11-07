@@ -1,4 +1,4 @@
-# Toroidal Theory of Prime Numbers and Chord-Cumulant Algebra (TTPC–CCA) in Lean 4
+# Toroidal Theory of Primes (TTP) in Lean 4
 
 ![Lean](https://img.shields.io/badge/Lean-4.35.0-blueviolet)
 ![Mathlib](https://img.shields.io/badge/Mathlib-v4.35.0-blue)
@@ -13,10 +13,11 @@
 
 ## Аннотация (RU)
 
-Библиотека **TTPC–CCA** формализует ядро *Тороидальной теории простых чисел*
-(Toroidal Theory of Prime Numbers) и *Хордово-кумулянтной алгебры*
-(Chord-Cumulant Algebra). Основная идея — заменить деление с остатком и просеивание
-на интервале арифметикой вычетов на **праймориальном торе**
+Библиотека **TTP** формализует ядро *Тороидальной теории простых чисел*
+(Toroidal Theory of Primes), включая хордово-кумулянтную алгебру
+(Chord-Cumulant Algebra) как аппарат гашения составного шума. Основная идея —
+заменить деление с остатком и просеивание на интервале арифметикой вычетов
+на **праймориальном торе**
 `Z / M_k Z`, где `M_k = p_k#` — праймориал первых `k` простых чисел. Составной шум
 (диполи, триполи, кубические узлы) гасится тождественно: алгебраически — через
 значение кругового полинома `Φ_q(1)` и функцию фон Мангольдта `Λ`, комбинаторно —
@@ -27,8 +28,8 @@
 
 ## Abstract (EN)
 
-**TTPC–CCA** is a Lean 4 / Mathlib library formalising the algebraic and combinatorial
-core of the Toroidal Theory of Prime Numbers. Integers are represented as vectors of
+**TTP** is a Lean 4 / Mathlib library formalising the algebraic and combinatorial
+core of the Toroidal Theory of Primes. Integers are represented as vectors of
 residues on a primorial torus `Z / p_k# Z`; composite contributions are annihilated by
 cyclotomic evaluation at one (`Φ_q(1)`), by von Mangoldt vanishing (`Λ(q) = 0`), and by
 the alternating truncated sieve logarithm `𝓛_k`. The development is fully verified:
@@ -39,7 +40,7 @@ the alternating truncated sieve logarithm `𝓛_k`. The development is fully ver
 ## 1. Концептуальное введение
 
 Классическое решето Эратосфена работает с целыми числами и делением с остатком.
-TTPC заменяет эту модель на **геометрию тора**:
+TTP заменяет эту модель на **геометрию тора**:
 
 1. **Праймориал `p_k#`** — произведение первых `k` простых чисел; он задаёт период
    тора `Z / M_k Z`.
@@ -49,7 +50,7 @@ TTPC заменяет эту модель на **геометрию тора**:
 3. **Копрайм-кристалл** `Φ_k* = T_kˣ` — мультипликативная группа обратимых
    элементов тора; её элементы — ровно те вычеты, что взаимно просты с `M_k`.
 4. **Составной шум** (числа с `ω(n) ≥ 2` и их степени) должен быть подавлен
-   фильтром. В TTPC это делается двумя независимыми способами:
+   фильтром. В TTP это делается двумя независимыми способами:
    - *алгебраически*: `Φ_q(1) = 1` и `Λ(q) = 0` для всех `q`, не являющихся
      степенью простого;
    - *комбинаторно*: знакопеременная сумма `𝓛_k(n) = Σ_{m=1}^{k} (-1)^{m-1}/m · C_m(n)`
@@ -57,7 +58,7 @@ TTPC заменяет эту модель на **геометрию тора**:
 5. **Фазовый диод** реализует шаг `n ↦ n + Δ` как независимое сложение вычетов
    на каждой оси — без целочисленного деления (DIV) и без заимствований между
    разрядами, что и является вычислительной моделью специализированного
-   кремниевого сопроцессора ТТПЧ.
+   кремниевого сопроцессора ТТП.
 
 ---
 
@@ -65,13 +66,13 @@ TTPC заменяет эту модель на **геометрию тора**:
 
 | Модуль | Раздел монографии | Ключевые определения и теоремы |
 |---|---|---|
-| `Numbertheory/Definitions.lean` | Глава 1 — праймориальный тор | `primorial : ℕ → ℕ`, `PrimorialTorus k := ZMod (primorial k)`, `CoprimeCrystal k := (PrimorialTorus k)ˣ`, `crystal_coprime` |
-| `Numbertheory/ChordCharge.lean` | Глава 3 — хордовая алгебра (ХКА) | `cyclotomicEvalOne q := (cyclotomic q ℤ).eval 1`; `cyclotomicEvalOne_prime`, `_prime_pow`, `_of_omega_ge_two`, `_eq_one_iff`, `_eq_one_iff_not_isPrimePow`, `_eq_one_iff_vonMangoldt_eq_zero` |
-| `Numbertheory/SieveNilpotence.lean` | Глава 4 — Аксиома IV (конечная нильпотентность) | `IsSieveFactorization B m n L`; `sieve_factorization_pow_le : B^m ≤ n`; `sieve_nilpotent`; `prime_factorization_length_one` |
-| `Numbertheory/ExactSieve.lean` | Глава 5.0 — алгебраическое замыкание решета | `squarefree_prime_of_chord_nontrivial`, `prime_of_sieve_horizon`, `sieve_exact_identity` |
-| `Numbertheory/PhaseDiode.lean` | Глава 5.1 — оператор фазового диода | `PhaseDiodeOpen p n := (n : ZMod p) ≠ 0`; `phase_diode_open_iff_not_dvd`, `phase_step_homomorphism`, `phase_diode_twin_open` |
-| `Numbertheory/CombinatorialSieve.lean` | Глава 5.2 — комбинаторное гашение | `sieveLogOrder1/2/3`; `sieve_log_prime_eq_one`, `sieve_log_prime_sq_eq_half`, `sieve_cancellation_dipole`, `sieve_cancellation_mixed_tripole`, `sieve_cancellation_cubic_node`, `sieve_log_order_embed` |
-| `Numbertheory.lean` | корень библиотеки | импортирует все модули |
+| `TTP/Definitions.lean` | Глава 1 — праймориальный тор | `primorial : ℕ → ℕ`, `PrimorialTorus k := ZMod (primorial k)`, `CoprimeCrystal k := (PrimorialTorus k)ˣ`, `crystal_coprime` |
+| `TTP/ChordCharge.lean` | Глава 3 — хордовая алгебра (ХКА) | `cyclotomicEvalOne q := (cyclotomic q ℤ).eval 1`; `cyclotomicEvalOne_prime`, `_prime_pow`, `_of_omega_ge_two`, `_eq_one_iff`, `_eq_one_iff_not_isPrimePow`, `_eq_one_iff_vonMangoldt_eq_zero` |
+| `TTP/SieveNilpotence.lean` | Глава 4 — Аксиома IV (конечная нильпотентность) | `IsSieveFactorization B m n L`; `sieve_factorization_pow_le : B^m ≤ n`; `sieve_nilpotent`; `prime_factorization_length_one` |
+| `TTP/ExactSieve.lean` | Глава 5.0 — алгебраическое замыкание решета | `squarefree_prime_of_chord_nontrivial`, `prime_of_sieve_horizon`, `sieve_exact_identity` |
+| `TTP/PhaseDiode.lean` | Глава 5.1 — оператор фазового диода | `PhaseDiodeOpen p n := (n : ZMod p) ≠ 0`; `phase_diode_open_iff_not_dvd`, `phase_step_homomorphism`, `phase_diode_twin_open` |
+| `TTP/CombinatorialSieve.lean` | Глава 5.2 — комбинаторное гашение | `sieveLogOrder1/2/3`; `sieve_log_prime_eq_one`, `sieve_log_prime_sq_eq_half`, `sieve_cancellation_dipole`, `sieve_cancellation_mixed_tripole`, `sieve_cancellation_cubic_node`, `sieve_log_order_embed` |
+| `TTP.lean` | корень библиотеки | импортирует все модули |
 
 ### 2.1. Содержательные формулировки
 
@@ -112,8 +113,8 @@ curl https://elan.lean-lang.org/elan-init.sh -sSf | sh -s -- -y
 source "$HOME/.elan/env"
 
 # 3. Клонирование и сборка
-git clone <URL-репозитория> ttpc_lean
-cd ttpc_lean
+git clone <URL-репозитория> ttp
+cd ttp
 lake exe cache get   # ≈ 6–7 GB olean-файлов Mathlib
 lake build
 ```
@@ -139,9 +140,9 @@ lake env lean path/to/File.lean
 
 | Способ | Команда / путь |
 |---|---|
-| Терминал WSL | `wsl --cd ~/ttpc_lean` |
-| Проводник Windows | `\\wsl.localhost\Ubuntu-24.04\home\gosudar\ttpc_lean` |
-| VS Code (Remote-WSL) | `code --remote wsl+Ubuntu-24.04 ~/ttpc_lean` |
+| Терминал WSL | `wsl --cd ~/ttp` |
+| Проводник Windows | `\\wsl.localhost\Ubuntu-24.04\home\gosudar\ttp` |
+| VS Code (Remote-WSL) | `code --remote wsl+Ubuntu-24.04 ~/ttp` |
 
 Расширение `leanprover.lean4` должно быть установлено **в WSL-remote** (не локально),
 иначе language server не увидит toolchain и Mathlib.
@@ -180,9 +181,9 @@ SORRY=0
 ## 5. Структура репозитория
 
 ```
-ttpc_lean/
-├── Numbertheory.lean              # корневой модуль (импортирует все разделы)
-├── Numbertheory/
+ttp/
+├── TTP.lean              # корневой модуль (импортирует все разделы)
+├── TTP/
 │   ├── Basic.lean                 # шаблонный модуль Lake
 │   ├── Definitions.lean           # Глава 1: праймориал, тор, кристалл
 │   ├── ChordCharge.lean           # Глава 3: Φ_q(1), примарность, Λ
@@ -227,14 +228,14 @@ ttpc_lean/
 исходных файлов. При использовании просьба ссылаться на репозиторий:
 
 ```bibtex
-@misc{ttpc_cca_lean,
-  title        = {Toroidal Theory of Prime Numbers and Chord-Cumulant Algebra (TTPC--CCA) in Lean 4},
+@misc{ttp_lean,
+  title        = {Toroidal Theory of Primes (TTP) in Lean 4},
   author       = {Andrei Lukianchikov},
   year         = {2026},
-  howpublished = {\url{https://github.com/<owner>/numbertheory}},
+  howpublished = {\url{https://github.com/<owner>/ttp}},
   note         = {Formalisation in Lean 4 with Mathlib}
 }
 ```
 
 > При публикации замените `<owner>` в BibTeX и URL репозитория на фактический
-> GitHub-аккаунт (`https://github.com/<owner>/ttpc_lean`).
+> GitHub-аккаунт (`https://github.com/<owner>/ttp`).

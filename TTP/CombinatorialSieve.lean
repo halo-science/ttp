@@ -9,11 +9,11 @@ public import Mathlib.Data.Rat.Defs
 public import Mathlib.Data.Rat.Lemmas
 public import Mathlib.Tactic.NormNum
 public import Mathlib.Tactic.Ring
-public import Numbertheory.Definitions
-public import Numbertheory.ChordCharge
-public import Numbertheory.SieveNilpotence
-public import Numbertheory.ExactSieve
-public import Numbertheory.PhaseDiode
+public import TTP.Definitions
+public import TTP.ChordCharge
+public import TTP.SieveNilpotence
+public import TTP.ExactSieve
+public import TTP.PhaseDiode
 
 /-!
 # Глава 5.2: комбинаторное гашение составного шума в операторном логарифме решета
@@ -24,7 +24,7 @@ public import Numbertheory.PhaseDiode
 
 @[expose] public section
 
-namespace TTPC
+namespace TTP
 
 /-- Знакопеременный логарифм решета глубины 1 (простой слой). -/
 def sieveLogOrder1 (C1 : ℚ) : ℚ :=
@@ -69,4 +69,4 @@ theorem sieve_log_order_embed (C1 C2 : ℚ) :
     sieveLogOrder3 C1 C2 0 = sieveLogOrder2 C1 C2 := by
   simp [sieveLogOrder3, sieveLogOrder2]
 
-end TTPC
+end TTP

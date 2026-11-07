@@ -8,7 +8,7 @@ module
 public import Mathlib.RingTheory.Polynomial.Cyclotomic.Basic
 public import Mathlib.RingTheory.Polynomial.Cyclotomic.Eval
 public import Mathlib.NumberTheory.ArithmeticFunction.VonMangoldt
-public import Numbertheory.Definitions
+public import TTP.Definitions
 
 /-!
 # Хордовая алгебра (ХКА): круговой заряд
@@ -19,7 +19,7 @@ public import Numbertheory.Definitions
 
 @[expose] public section
 
-namespace TTPC
+namespace TTP
 
 open Polynomial
 
@@ -99,4 +99,4 @@ theorem cyclotomicEvalOne_eq_one_iff_vonMangoldt_eq_zero {q : ℕ} (hq : 1 < q) 
     cyclotomicEvalOne q = 1 ↔ Λ q = 0 := by
   rw [cyclotomicEvalOne_eq_one_iff_not_isPrimePow hq, ArithmeticFunction.vonMangoldt_eq_zero_iff]
 
-end TTPC
+end TTP

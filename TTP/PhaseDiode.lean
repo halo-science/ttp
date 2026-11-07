@@ -7,9 +7,9 @@ module
 
 public import Mathlib.Data.Nat.Prime.Basic
 public import Mathlib.Data.ZMod.Basic
-public import Numbertheory.Definitions
-public import Numbertheory.ChordCharge
-public import Numbertheory.ExactSieve
+public import TTP.Definitions
+public import TTP.ChordCharge
+public import TTP.ExactSieve
 
 /-!
 # Оператор фазового диода и бескомпараторная кинематика тора
@@ -20,7 +20,7 @@ public import Numbertheory.ExactSieve
 
 @[expose] public section
 
-namespace TTPC
+namespace TTP
 
 /-- Фазовый диод на оси `p`: проверка ненулевого вычета (пропускание открытого узла). -/
 def PhaseDiodeOpen (p : ℕ) (n : ℕ) : Prop :=
@@ -46,4 +46,4 @@ theorem phase_diode_twin_open (p n : ℕ) [Fact p.Prime]
   · exact (phase_diode_open_iff_not_dvd p n).mp h1
   · exact (phase_diode_open_iff_not_dvd p (n + 2)).mp h2
 
-end TTPC
+end TTP
