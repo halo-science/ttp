@@ -6,3 +6,4 @@ import TTP.ExactSieve
 import TTP.PhaseDiode
 import TTP.CombinatorialSieve
 import TTP.MemoryKernel
+import TTP.ProperTimeWhitening
