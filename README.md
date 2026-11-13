@@ -25,7 +25,8 @@
 направления — ядро памяти Шеннона, обеление собственного времени и факторизация
 Холецкого–Рамануджана — вынесены в модули `MemoryKernel`, `ProperTimeWhitening`
 и `CholeskyRamanujan`, а ультраметрический мост к функциональным полям `𝔽_q[t]`
-реализован в модуле `FunctionFieldBridge`.
+реализован в модуле `FunctionFieldBridge`. Метрики тора и бескомпараторная СОК
+(Главы 2, 5.2, 7.2, 8.1, 8.3, 10) формализованы в `ToroidalMetricsAndRNS`.
 
 Все результаты проверены ядром Lean 4: библиотека собирается с `exit code 0`,
 без предупреждений компилятора и без `sorry`.
@@ -40,7 +41,9 @@ the alternating truncated sieve logarithm `𝓛_k`. Three analytic directions �
 the Shannon memory kernel, proper-time whitening, and the Cholesky–Ramanujan
 factorization — are developed in `MemoryKernel`, `ProperTimeWhitening`, and
 `CholeskyRamanujan`, and the ultrametric bridge to the function fields `𝔽_q[t]`
-is implemented in `FunctionFieldBridge`. The development is fully verified:
+is implemented in `FunctionFieldBridge`; toroidal metrics and the comparator-free RNS
+datapath (Chapters 2, 5.2, 7.2, 8.1, 8.3, 10) are covered by `ToroidalMetricsAndRNS`.
+The development is fully verified:
 `lake build` exits with code `0`, zero compiler warnings, zero `sorry`.
 
 ---
@@ -84,6 +87,7 @@ TTP заменяет эту модель на **геометрию тора**:
 | `TTP/ProperTimeWhitening.lean` | Направление II — обеление собственного времени | `PhaseDiodeChain4Open`; `phase_diode_chain4_iff_not_dvd`, `phase_diode_chain4_periodic`, `phase_diode_chain4_two_of_even`; `properTimeDefect`, `properTimeDefect_eq_zero_of_horizon`; `cmi_zero_of_vanishing_kernels`; `cca_composite_channel_annihilation`; `external_cmi_tail_lt` |
 | `TTP/CholeskyRamanujan.lean` | Направление III — Холецкий–Рамануджан | `jordanTotient2`, `torusGram`, `choleskyRaw`, `choleskyInvRaw`; `sum_jordanTotient2_divisors`, `jordanTotient2_prime`, `torusGram_cholesky_factorization`, `cholesky_mobius_inversion`, `ramanujan_linear_drift_zero`, `ramanujan_totient_weight`, `torus_coboundary_prime_factor` |
 | `TTP/FunctionFieldBridge.lean` | Направление IV — мост к функциональным полям | `poly_monic_mul_natDegree`, `poly_quadratic_degree_horizon`; `poly_shell_exact_dvd`, `poly_shell_zero_remainder`; `polyTailLayer`, `poly_tail_geometric_sum`, `poly_tail_geometric_lt`; `ramanujanWaveUnitInterval`, `ramanujanWaveUnitInterval_eq_zero` |
+| `TTP/ToroidalMetricsAndRNS.lean` | Главы 2, 5.2, 7.2, 8.1, 8.3, 10 — метрики и СОК | `stormer_resonance_13090`, `dyadic_center_coprime`; `coboundary_telescope_sum`, `coboundary_telescope_bound`, `euler_operator_linear_fixed_point`; `purePrimeProjectorPower`, `purePrimeProjectorPower_eq_delta`; `dualAdder`, `dualAdder_eq_mod`, `dualAdder_lt`, `dualAdder_ne_zero_iff_phase_diode_open` |
 | `TTP.lean` | корень библиотеки | импортирует все модули |
 
 ### 2.1. Содержательные формулировки
@@ -121,6 +125,11 @@ TTP заменяет эту модель на **геометрию тора**:
   `∑_{j<N} 1/(2(q²)^(d+j)) = (1 - (q²)^{-N}) / (2(q²-1)(q²)^(d-1))`
   строго меньше `1/(2(q²-1)(q²)^(d-1))` при `N ≥ 1`; волна Рамануджана
   на `[0, 1)` тождественно равна нулю при `q > 1`.
+- **Метрики и СОК (Главы 2, 5.2, 7.2, 8.1, 8.3, 10).** `M₈ ∣ (Δ*-1)Δ*(Δ*+1)` и
+  `w_H(13090) = 3`; `Coprime ((2m+1)·M_odd + 2^s) (2·M_odd)` при нечётном `M_odd`
+  и `s ≥ 1`; `∑_{i<L} (E(i+1) - E(i)) = E(L) - E(0)` зажата в `[-2C, 2C]`;
+  `p/(p-1)·(x - x/p) = x`; `𝓛_k^Dir(p^m) = δ_{m,1}`; `dualAdder p r δ = (r+δ) % p < p`
+  и `dualAdder p r δ ≠ 0 ↔ PhaseDiodeOpen p (r+δ)`.
 
 ---
 
@@ -188,7 +197,7 @@ lake env lean path/to/File.lean
 Mathlib `v4.35.0`. Дата верификации: 2026-11-13.
 
 ```
-Build completed successfully (2923 jobs).
+Build completed successfully (2924 jobs).
 BUILD_EXIT=0
 WARNINGS=0
 ERRORS=0
@@ -201,19 +210,22 @@ SORRY=0
 | Предупреждения компилятора | **0** |
 | Ошибки | **0** |
 | `sorry` в исходниках | **0** |
-| Задач сборки (jobs) | 2923 |
-| Модулей в `TTP/` | **11** |
+| Задач сборки (jobs) | 2924 |
+| Модулей в `TTP/` | **12** |
 | Проект собирается после `touch` любого модуля | да (проверено) |
 
 Дополнительно каждый модуль проверялся независимым файлом через `lake env lean`
 (утверждения применялись к конкретным числам: `p = 2, 3, 5, 7, 11, 13`,
 `n = 6, 10, 12, 30`, `q = 3, 5, 7, 11`, `r = 2, 3, 5`, `B = 2, 3, 4, 5`,
 `M = 6, 30`; для полиномиального моста — `p = 2, 3`, многочлены над `ZMod 2`
-и `ZMod 3`, `q = 2, 3`, `d = 1, 2, 3`, `q_ram = 6, 30`), с `exit code 0`.
+и `ZMod 3`, `q = 2, 3`, `d = 1, 2, 3`, `q_ram = 6, 30`; для метрик и СОК —
+`M_odd = 15, 105`, `m = 0, 1, 2`, `s = 1, 2, 3, 4`, `m_pow = 1, 2, 3, 4, 6`,
+`p = 5, 7, 19`), с `exit code 0`.
 
 Ключевые коммиты аналитических направлений: `60db6ee` — `MemoryKernel`,
 `3f4a627` — `ProperTimeWhitening`, `b99c5eb` — `CholeskyRamanujan`;
-мост к функциональным полям зафиксирован отдельным коммитом `FunctionFieldBridge`.
+мост к функциональным полям и метрики/СОК зафиксированы отдельными коммитами
+`FunctionFieldBridge` и `ToroidalMetricsAndRNS`.
 
 ---
 
@@ -233,7 +245,8 @@ ttp/
 │   ├── MemoryKernel.lean          # Направление I: ядро памяти Шеннона
 │   ├── ProperTimeWhitening.lean   # Направление II: обеление собственного времени
 │   ├── CholeskyRamanujan.lean     # Направление III: Холецкий–Рамануджан
-│   └── FunctionFieldBridge.lean   # Направление IV: мост к 𝔽_q[t]
+│   ├── FunctionFieldBridge.lean   # Направление IV: мост к 𝔽_q[t]
+│   └── ToroidalMetricsAndRNS.lean # Главы 2, 5.2, 7.2, 8.1, 8.3, 10: метрики и СОК
 ├── lean-toolchain                 # leanprover/lean4:v4.35.0
 ├── lakefile.toml                  # зависимости и опции линтеров Mathlib
 ├── lake-manifest.json
@@ -271,6 +284,10 @@ ttp/
   `Polynomial.irreducible_iff_lt_natDegree_lt` (нормированный делитель степени
   `≤ deg F / 2`) и `Polynomial.monic_mul_leadingCoeff_inv` (нормировка
   неприводимого делителя); лимит heartbeats повышен с поясняющим комментарием.
+- `Mathlib.Algebra.Parity` в 4.35 отсутствует: чётность импортируется из
+  `Mathlib.Algebra.Ring.Parity`. Ячейка `dualAdder` вычислима, поэтому её значения
+  проверяются тактикой `decide`; проектор повторно использует
+  `TTP.sum_moebius_divisors` из `CholeskyRamanujan`.
 - Все строки должны укладываться в 100 символов (`linter.style.longLine`).
 - Ключевые леммы-опоры: `ZMod.val_coe_unit_coprime`,
   `Polynomial.eval_one_cyclotomic_not_prime_pow`,
