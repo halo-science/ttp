@@ -21,7 +21,10 @@
 `Z / M_k Z`, где `M_k = p_k#` — праймориал первых `k` простых чисел. Составной шум
 (диполи, триполи, кубические узлы) гасится тождественно: алгебраически — через
 значение кругового полинома `Φ_q(1)` и функцию фон Мангольдта `Λ`, комбинаторно —
-через знакопеременный усечённый логарифм решета `𝓛_k`.
+через знакопеременный усечённый логарифм решета `𝓛_k`. Три аналитических
+направления — ядро памяти Шеннона, обеление собственного времени и факторизация
+Холецкого–Рамануджана — вынесены в модули `MemoryKernel`, `ProperTimeWhitening`
+и `CholeskyRamanujan`.
 
 Все результаты проверены ядром Lean 4: библиотека собирается с `exit code 0`,
 без предупреждений компилятора и без `sorry`.
@@ -32,7 +35,10 @@
 core of the Toroidal Theory of Primes. Integers are represented as vectors of
 residues on a primorial torus `Z / p_k# Z`; composite contributions are annihilated by
 cyclotomic evaluation at one (`Φ_q(1)`), by von Mangoldt vanishing (`Λ(q) = 0`), and by
-the alternating truncated sieve logarithm `𝓛_k`. The development is fully verified:
+the alternating truncated sieve logarithm `𝓛_k`. Three analytic directions —
+the Shannon memory kernel, proper-time whitening, and the Cholesky–Ramanujan
+factorization — are developed in `MemoryKernel`, `ProperTimeWhitening`, and
+`CholeskyRamanujan`. The development is fully verified:
 `lake build` exits with code `0`, zero compiler warnings, zero `sorry`.
 
 ---
@@ -72,6 +78,9 @@ TTP заменяет эту модель на **геометрию тора**:
 | `TTP/ExactSieve.lean` | Глава 5.0 — алгебраическое замыкание решета | `squarefree_prime_of_chord_nontrivial`, `prime_of_sieve_horizon`, `sieve_exact_identity` |
 | `TTP/PhaseDiode.lean` | Глава 5.1 — оператор фазового диода | `PhaseDiodeOpen p n := (n : ZMod p) ≠ 0`; `phase_diode_open_iff_not_dvd`, `phase_step_homomorphism`, `phase_diode_twin_open` |
 | `TTP/CombinatorialSieve.lean` | Глава 5.2 — комбинаторное гашение | `sieveLogOrder1/2/3`; `sieve_log_prime_eq_one`, `sieve_log_prime_sq_eq_half`, `sieve_cancellation_dipole`, `sieve_cancellation_mixed_tripole`, `sieve_cancellation_cubic_node`, `sieve_log_order_embed` |
+| `TTP/MemoryKernel.lean` | Направление I — ядро памяти Шеннона | `memoryKernel t`; `memoryKernel_sub_taylorLower`, `taylorUpper_sub_memoryKernel`, `taylorLower_remainder_pos`, `taylorUpper_remainder_pos`, `memoryKernel_taylor_sandwich`; `memoryJLower/Upper`, `memoryJ_bounds`; `CMI`, `CMI_three`; `tail_majorant_split`, `tail_sum_telescope`, `tail_sum_lt` |
+| `TTP/ProperTimeWhitening.lean` | Направление II — обеление собственного времени | `PhaseDiodeChain4Open`; `phase_diode_chain4_iff_not_dvd`, `phase_diode_chain4_periodic`, `phase_diode_chain4_two_of_even`; `properTimeDefect`, `properTimeDefect_eq_zero_of_horizon`; `cmi_zero_of_vanishing_kernels`; `cca_composite_channel_annihilation`; `external_cmi_tail_lt` |
+| `TTP/CholeskyRamanujan.lean` | Направление III — Холецкий–Рамануджан | `jordanTotient2`, `torusGram`, `choleskyRaw`, `choleskyInvRaw`; `sum_jordanTotient2_divisors`, `jordanTotient2_prime`, `torusGram_cholesky_factorization`, `cholesky_mobius_inversion`, `ramanujan_linear_drift_zero`, `ramanujan_totient_weight`, `torus_coboundary_prime_factor` |
 | `TTP.lean` | корень библиотеки | импортирует все модули |
 
 ### 2.1. Содержательные формулировки
@@ -89,6 +98,20 @@ TTP заменяет эту модель на **геометрию тора**:
   `(n + Δ : ZMod p) = n + Δ` — шаг на торе является гомоморфизмом сложения.
 - **Гашение (Гл. 5.2).** `𝓛₂(pq) = 0`, `𝓛₃(p²q) = 0`, `𝓛₃(pqr) = 0`,
   при этом `𝓛₂(p²) = 1/2`, `𝓛₁(p) = 1`.
+- **Ядро памяти (Направление I).** `K(t) = (3+t)/((1-t)(1+t)²)` зажато между
+  `3-2t` и `3-2t+5t²` при `0 < t ≤ 1/2`; `0 < J_low(r) < J_high(r) < 1/(2r²)`
+  при `r ≥ 2`; `CMI(3, p₀) = p₀(1-p₀)²J₁`; хвост
+  `∑_{i<N} 1/(2(B+i-2)(B+i-3)) = 1/(2(B-3)) - 1/(2(B+N-3)) < 1/(2(B-3))`
+  при `B ≥ 4`, `N ≥ 1`.
+- **Обеление собственного времени (Направление II).** 4-точечная цепочка на оси `p`
+  открыта ↔ `p` не делит узлы и периодична по `u` с периодом `p`; при чётных сдвигах
+  на оси `p = 2` цепочка открыта ↔ `Odd u`; при `2 ≤ B`, `1 ≤ a`, `b ≤ B²`
+  дефект `properTimeDefect B a b = 0`; при `ω(q) ≥ 2` выполнено
+  `Φ_q(1) = 1 ∧ Λ(q) = 0`; внешний хвост памяти строго `< 1/(2(B-3))`.
+- **Холецкий–Рамануджан (Направление III).** `∑_{c∣g} J₂(c) = g²`,
+  `J₂(p) = p²-1`; `𝒢_{d₁d₂} = (1/12) ∑_c J₂(c) L_{d₁c} L_{d₂c}`;
+  `∑_d L⁻¹_{qd} L_{dc} = δ_{q,c}`; `∑_{d∣q} d·μ(q/d) = φ(q)`;
+  `J₂(p)/φ(p)² = (p+1)/(p-1)`; `∑_{d∣q} μ(q/d) = 0` при `q > 1`.
 
 ---
 
@@ -153,10 +176,10 @@ lake env lean path/to/File.lean
 
 Проверено в окружении: **Ubuntu 24.04 LTS (WSL2), x86_64**, Lean 4.35.0
 (commit `eb6cafb7290e8bd5f2937522d8d804f58f02bafc`), Lake 5.0.0, elan 4.2.4,
-Mathlib `v4.35.0`. Дата верификации: 2026-11-07.
+Mathlib `v4.35.0`. Дата верификации: 2026-11-13.
 
 ```
-Build completed successfully (2919 jobs).
+Build completed successfully (2922 jobs).
 BUILD_EXIT=0
 WARNINGS=0
 ERRORS=0
@@ -169,12 +192,17 @@ SORRY=0
 | Предупреждения компилятора | **0** |
 | Ошибки | **0** |
 | `sorry` в исходниках | **0** |
-| Задач сборки (jobs) | 2919 |
+| Задач сборки (jobs) | 2922 |
+| Модулей в `TTP/` | **10** |
 | Проект собирается после `touch` любого модуля | да (проверено) |
 
 Дополнительно каждый модуль проверялся независимым файлом через `lake env lean`
-(утверждения применялись к конкретным числам: `p = 3, 5, 7, 11, 13`, `n = 6, 10, 12, 30`,
-`B = 2, 3`), с `exit code 0`.
+(утверждения применялись к конкретным числам: `p = 2, 3, 5, 7, 11, 13`,
+`n = 6, 10, 12, 30`, `q = 3, 5, 7, 11`, `r = 2, 3, 5`, `B = 2, 3, 4, 5`,
+`M = 6, 30`), с `exit code 0`.
+
+Ключевые коммиты аналитических направлений: `60db6ee` — `MemoryKernel`,
+`3f4a627` — `ProperTimeWhitening`, `b99c5eb` — `CholeskyRamanujan`.
 
 ---
 
@@ -190,7 +218,10 @@ ttp/
 │   ├── SieveNilpotence.lean       # Глава 4: Аксиома IV
 │   ├── ExactSieve.lean            # Глава 5.0: точное решето и горизонт B²
 │   ├── PhaseDiode.lean            # Глава 5.1: фазовый диод
-│   └── CombinatorialSieve.lean    # Глава 5.2: гашение 𝓛_k
+│   ├── CombinatorialSieve.lean    # Глава 5.2: гашение 𝓛_k
+│   ├── MemoryKernel.lean          # Направление I: ядро памяти Шеннона
+│   ├── ProperTimeWhitening.lean   # Направление II: обеление собственного времени
+│   └── CholeskyRamanujan.lean     # Направление III: Холецкий–Рамануджан
 ├── lean-toolchain                 # leanprover/lean4:v4.35.0
 ├── lakefile.toml                  # зависимости и опции линтеров Mathlib
 ├── lake-manifest.json
@@ -214,6 +245,13 @@ ttp/
   `Mathlib.Data.List.BigOperators.Lemmas` отсутствуют; используются
   `Mathlib.Data.Rat.Defs` + `Mathlib.Data.Rat.Lemmas` и
   `Mathlib.Algebra.(Order.)BigOperators.Group.List.*` соответственно.
+- `properTimeDefect` — **noncomputable**: предикат содержит неограниченный
+  `∀ p, …`, поэтому определение использует `classical`; `Nat.sum_divisorsAntidiagonal`
+  применяется явным термом (переписывание не матчит шаблон `f i.1 i.2`).
+- Для обращения матрицы используется биекция `Finset.sum_bij` (d ↦ d/c), а для
+  `J₂` — инверсия Мёбиуса `sum_eq_iff_sum_mul_moebius_eq` совместно с
+  `Nat.sum_totient`; в 4.35 это `Nat.Prime.divisors`, а не `Nat.divisors_prime`.
+- Все строки должны укладываться в 100 символов (`linter.style.longLine`).
 - Ключевые леммы-опоры: `ZMod.val_coe_unit_coprime`,
   `Polynomial.eval_one_cyclotomic_not_prime_pow`,
   `Nat.squarefree_and_prime_pow_iff_prime`, `Nat.minFac_sq_le_self`,
