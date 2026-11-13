@@ -353,9 +353,6 @@ The code is distributed under the **Apache License 2.0**
   year         = {2026},
   howpublished = {\url{https://github.com/halo-science/ttp}},
   note         = {Formalisation in Lean 4 with Mathlib;
-                  Zenodo DOI: \url{https://doi.org/10.5281/zenodo.XXXXXXX}}
+                  Zenodo DOI: \url{https://doi.org/10.5281/zenodo.24209738}}
 }
 ```
-
-Before the public release, replace the Zenodo DOI placeholder with the DOI assigned to
-the archived release.
