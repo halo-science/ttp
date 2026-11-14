@@ -18,7 +18,7 @@
 ![Verilator](https://img.shields.io/badge/Verilator-155%2C974%20checks%20PASS-brightgreen)
 ![Yosys](https://img.shields.io/badge/Yosys%20synthesis-898%20vs%2018%2C763%20cells%20%2820.9x%29-blueviolet)
 ![Metrology](https://img.shields.io/badge/Metrology-X%20%3D%202e8%20reproduced-success)
-![DOI](https://img.shields.io/badge/DOI-10.5281%2Fzenodo.24209738-blue)
+[![DOI](https://img.shields.io/badge/DOI-10.5281%2Fzenodo.24217343-blue)](https://doi.org/10.5281/zenodo.24217343)
 ![License](https://img.shields.io/badge/license-Apache--2.0-blue)
 
 A Lean 4 / Mathlib formalisation of the algebraic, combinatorial, analytic and
@@ -417,6 +417,10 @@ The code is distributed under the **Apache License 2.0**
   year         = {2026},
   howpublished = {\url{https://github.com/halo-science/ttp}},
   note         = {Formalisation in Lean 4 with Mathlib;
-                  Zenodo DOI: \url{https://doi.org/10.5281/zenodo.24209738}}
+                  Zenodo DOI (v1.1.0): \url{https://doi.org/10.5281/zenodo.24217343};
+                  archived v1.0.0 DOI: \url{https://doi.org/10.5281/zenodo.24209738}}
 }
 ```
+
+**Current release DOI:** [10.5281/zenodo.24217343](https://doi.org/10.5281/zenodo.24217343)
+(v1.1.0). **Archived v1.0.0 DOI:** [10.5281/zenodo.24209738](https://doi.org/10.5281/zenodo.24209738).
