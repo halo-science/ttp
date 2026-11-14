@@ -1,0 +1,29 @@
+{
+  "title": "Toroidal Theory of Primes (TTP) & Chord-Cumulant Algebra: Lean 4 Formalization, Reproducible Metrology, and Divider-less RNS-16 RTL",
+  "upload_type": "software",
+  "creators": [
+    {
+      "name": "Lukianchikov, Andrei",
+      "orcid": "0009-0005-0181-4537"
+    }
+  ],
+  "license": "Apache-2.0",
+  "keywords": [
+    "Toroidal Theory of Primes",
+    "Chord-Cumulant Algebra",
+    "Lean 4",
+    "Formal Verification",
+    "Prime Gaps",
+    "Shannon Information",
+    "Residue Number System",
+    "Hardware Synthesis",
+    "Yosys"
+  ],
+  "related_identifiers": [
+    {
+      "scheme": "url",
+      "identifier": "https://github.com/halo-science/ttp",
+      "relation": "isSupplementTo"
+    }
+  ]
+}
