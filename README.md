@@ -8,7 +8,7 @@
 | :-: | :--- | :--- |
 | **1** | **Lean 4 Formal Kernel** | **12 modules**, **2924 build jobs**, `sorry = 0`; only the standard axioms `propext`, `Classical.choice`, `Quot.sound`; full audit in `docs/VERIFICATION_AUDIT.md`. |
 | **2** | **Reproducible Python Metrology** (`scripts/metrology_ch9.py`) | $\pi(2\cdot10^8) = 11{,}078{,}937$; `CMI_net = 0.000000` nats; reconstruction error of $\pi_{\text{CCA}}(X)$ is `0.00e+00`; one command: `python3 scripts/metrology_ch9.py`. |
-| **3** | **Bit-Exact RTL Simulation** (`rtl/tb/tb_ttp_rns16.sv`) | Verilator 5.020: **155,974 checks**, **0 errors**, **0 warnings**; five reference points × 10,000 steps on $M_{16} = 53\# > 2^{64}$. |
+| **3** | **Bit-Exact RTL Simulation** (`rtl/tb/tb_ttp_rns16.sv`) | Verilator 5.020: **155,974 checks**, **0 errors**, **0 warnings**; five reference points × 10,000 steps on $M_{16} = 53\sharp > 2^{64}$. |
 | **4** | **Gate-Level Silicon Synthesis** (`rtl/tb/synth_yosys.ys`, `docs/RTL_SYNTHESIS_AUDIT.md`) | Yosys 0.33: **67** cells Dual-Adder; **898** cells RNS-16 core vs **18,763** cells 64-bit `%` divider; **20.9×** area and **23.0×** critical-path improvement. |
 
 ![Lean](https://img.shields.io/badge/Lean-4.35.0-blueviolet)
