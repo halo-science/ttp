@@ -1,3 +1,5 @@
+`timescale 1ns/1ps
+
 //==============================================================================
 // Module 3: Vector landing unit — W_VEC parallel 16-axis RNS slices (TTP)
 // Each slice instantiates 16 combinational Dual-Adder cells (no divider).

@@ -1,9 +1,24 @@
 # Toroidal Theory of Primes (TTP) in Lean 4
 
+**Release v1.1.0** — monograph, numerical metrology, bit-exact RTL simulation and gate-level synthesis.
+
+**Four Pillars of Verification in v1.1.0**
+
+| # | Verification pillar | Reproducible evidence |
+| :-: | :--- | :--- |
+| **1** | **Lean 4 Formal Kernel** | **12 modules**, **2924 build jobs**, `sorry = 0`; only the standard axioms `propext`, `Classical.choice`, `Quot.sound`; full audit in `docs/VERIFICATION_AUDIT.md`. |
+| **2** | **Reproducible Python Metrology** (`scripts/metrology_ch9.py`) | $\pi(2\cdot10^8) = 11{,}078{,}937$; `CMI_net = 0.000000` nats; reconstruction error of $\pi_{\text{CCA}}(X)$ is `0.00e+00`; one command: `python3 scripts/metrology_ch9.py`. |
+| **3** | **Bit-Exact RTL Simulation** (`rtl/tb/tb_ttp_rns16.sv`) | Verilator 5.020: **155,974 checks**, **0 errors**, **0 warnings**; five reference points × 10,000 steps on $M_{16} = 53\# > 2^{64}$. |
+| **4** | **Gate-Level Silicon Synthesis** (`rtl/tb/synth_yosys.ys`, `docs/RTL_SYNTHESIS_AUDIT.md`) | Yosys 0.33: **67** cells Dual-Adder; **898** cells RNS-16 core vs **18,763** cells 64-bit `%` divider; **20.9×** area and **23.0×** critical-path improvement. |
+
 ![Lean](https://img.shields.io/badge/Lean-4.35.0-blueviolet)
 ![Mathlib](https://img.shields.io/badge/Mathlib-v4.35.0-blue)
 ![Build](https://img.shields.io/badge/build-passing-brightgreen)
 ![sorry](https://img.shields.io/badge/sorry-0-brightgreen)
+![Verilator](https://img.shields.io/badge/Verilator-155%2C974%20checks%20PASS-brightgreen)
+![Yosys](https://img.shields.io/badge/Yosys%20synthesis-898%20vs%2018%2C763%20cells%20%2820.9x%29-blueviolet)
+![Metrology](https://img.shields.io/badge/Metrology-X%20%3D%202e8%20reproduced-success)
+![DOI](https://img.shields.io/badge/DOI-10.5281%2Fzenodo.24209738-blue)
 ![License](https://img.shields.io/badge/license-Apache--2.0-blue)
 
 A Lean 4 / Mathlib formalisation of the algebraic, combinatorial, analytic and
@@ -25,7 +40,10 @@ repository contains **12 verified Lean modules**, the full monograph
 axiom audit (`docs/VERIFICATION_AUDIT.md`), and synthesizable SystemVerilog RTL
 (`rtl/`). The development is fully verified: `lake build` exits with code `0`,
 zero compiler warnings, zero `sorry`, and `#print axioms` reports only the standard
-Lean/Mathlib axioms.
+Lean/Mathlib axioms. Lean 4 certifies the entire constructive finite algebraic,
+information-theoretic, sieve and hardware core of all 10 chapters; the analytic
+limits `k, X → ∞` (the Berling–Nyman space `H_BN`) and the empirical metrology
+are demarcated according to the three-level epistemological separation.
 
 ## Аннотация (RU)
 
@@ -37,7 +55,11 @@ Lean/Mathlib axioms.
 также ячейку `Dual-Adder` бескомпараторного сопроцессора СОК. Библиотека содержит
 **12 верифицированных модулей** (`2924` задачи сборки, `sorry = 0`); полная
 монография — `docs/monograph_v2.md`, машинный аудит — `docs/VERIFICATION_AUDIT.md`,
-синтезируемый RTL — `rtl/`.
+синтезируемый RTL — `rtl/`. В Lean 4 сертифицировано всё конструктивное конечное
+алгебраическое, теоретико-информационное, ситовое и схемотехническое ядро всех
+10 глав; аналитические пределы `k, X → ∞` (пространство Бёрлинга — Нимана `H_BN`)
+и эмпирическая метрология разграничены согласно трёхуровневой эпистемологической
+демаркации.
 
 ## Manifesto: The HALO Paradigm of Verified Symbiotic Science
 
@@ -183,6 +205,26 @@ lake env lean path/to/File.lean
 
 `lake exe cache get` is idempotent and downloads only missing artefacts.
 
+### Numerical metrology and RTL reproduction
+
+```bash
+# Chapters 5 and 9 metrology to X = 2*10^8 (B0-B3, tables 5.1/9.1/9.2/9.4)
+python3 scripts/metrology_ch9.py
+
+# Bit-exact SystemVerilog testbench (Verilator 5.020)
+verilator --binary --sv --Wall --timing -j 4 --top-module tb_ttp_rns16 \
+  -Irtl -Irtl/tb \
+  rtl/ttp_dual_adder_cell.sv rtl/ttp_phase_diode_rns16.sv \
+  rtl/ttp_vector_landing_unit.sv rtl/tb/tb_ttp_rns16.sv -o tb_ttp_rns16
+./obj_dir/tb_ttp_rns16
+
+# Gate-level synthesis (Yosys 0.33, about 11 minutes)
+yosys -s rtl/tb/synth_yosys.ys
+```
+
+Expected simulation summary: `TB PASS: 155974 checks, 0 errors`. The full
+synthesis protocol and cell counts are in `docs/RTL_SYNTHESIS_AUDIT.md`.
+
 ### Editor setup
 
 Install the `leanprover.lean4` extension in VS Code **in the same environment**
@@ -229,19 +271,30 @@ on the standard Lean/Mathlib axioms `propext`, `Classical.choice`, `Quot.sound`
 (`stormer_resonance_13090` uses only `propext`). There is **no `sorryAx`** and no
 `Lean.ofReduceBool`; the proofs use `decide`/`norm_num`, never `native_decide`.
 
-### RTL verification
+### RTL verification and synthesis
 
-The three SystemVerilog modules in `rtl/` are checked with
+The three SystemVerilog modules in `rtl/` are checked with Verilator 5.020 and
+synthesised with Yosys 0.33:
 
-```bash
-verilator --lint-only --sv --Wall rtl/ttp_dual_adder_cell.sv \
-  rtl/ttp_phase_diode_rns16.sv rtl/ttp_vector_landing_unit.sv \
-  --top-module ttp_vector_landing_unit
-```
+* `rtl/tb/tb_ttp_rns16.sv` — self-checking bit-exact testbench:
+  **155 974 checks, 0 errors, 0 warnings**. It exhaustively covers the
+  Dual-Adder cell for `P = 2, 3, 5, 53`, runs five reference points for
+  `5 × 10 000` sequential steps on `M_16 = 53# > 2^64`, and checks the vector
+  landing unit on six anchors × 33 requests.
+* `rtl/tb/synth_yosys.ys` and `rtl/tb/ref_div64_checker.sv` — gate-level
+  synthesis flow and the 64-bit `%`-based reference checker.
+* `docs/RTL_SYNTHESIS_AUDIT.md` — full Verilator/Yosys protocol and logs.
 
-which exits with code `0` and no warnings. Each file contains exactly one `module`
-… `endmodule`, balanced delimiters, and no integer division or remainder operator in
-the datapath.
+| Block | Cells | DFF | Critical path |
+|---|---:|---:|---:|
+| `ttp_dual_adder_cell` (`P=53`, `W=6`) | **67** | 0 | **16** |
+| `ttp_phase_diode_rns16` (`M_16 = 53#`) | **898** (826 comb. + 72 DFF) | **72** | **20** |
+| `ref_div64_checker` (64-bit, 16 primes) | **18 763** | 0 | **459** |
+
+The TTP phase core therefore needs **20.9×** fewer cells and has a **23.0×**
+shorter critical path than the `%`-based 64-bit reference checker. The RTL was
+kept bit-exact while making the 16 channel instantiations explicit for the
+Yosys 0.33 SystemVerilog frontend.
 
 ## 5. Repository Structure
 
@@ -261,14 +314,21 @@ ttp/
 │   ├── CholeskyRamanujan.lean     # Chapters 3, 6, 8: Cholesky–Ramanujan
 │   ├── FunctionFieldBridge.lean   # Chapter 8: bridge to 𝔽_q[t]
 │   └── ToroidalMetricsAndRNS.lean # Chapters 2, 5, 7, 8, 10: metrics and RNS
+├── scripts/
+│   └── metrology_ch9.py           # reproducible metrology of Chapters 5 and 9
 ├── docs/
 │   ├── monograph_v2.md            # full monograph (10 chapters, Russian)
 │   ├── VERIFICATION_AUDIT.md      # build log and #print axioms report
+│   ├── RTL_SYNTHESIS_AUDIT.md     # Verilator 5.020 / Yosys 0.33 protocol
 │   └── figures/                   # monograph figures
 ├── rtl/
 │   ├── ttp_dual_adder_cell.sv     # comparator-free Dual-Adder cell
 │   ├── ttp_phase_diode_rns16.sv   # 16-channel Phase Diode RNS core
-│   └── ttp_vector_landing_unit.sv # 32-slice vector landing unit
+│   ├── ttp_vector_landing_unit.sv # 32-slice vector landing unit
+│   └── tb/
+│       ├── tb_ttp_rns16.sv        # self-checking bit-exact testbench
+│       ├── ref_div64_checker.sv   # 64-bit %-based reference checker
+│       └── synth_yosys.ys         # Yosys gate-level synthesis flow
 ├── LICENSE                        # Apache License 2.0
 ├── README.md
 ├── lean-toolchain                 # leanprover/lean4:v4.35.0
@@ -283,7 +343,11 @@ ttp/
 |---|---|
 | `docs/monograph_v2.md` | Full monograph (10 chapters, Russian): TTP–CCA theory, proofs, tables and Lean listings |
 | `docs/VERIFICATION_AUDIT.md` | Machine-readable report: `lake build` (`2924 jobs`, `sorry = 0`) and `#print axioms` for 15 key theorems |
+| `docs/RTL_SYNTHESIS_AUDIT.md` | Verilator 5.020 bit-exact simulation and Yosys 0.33 gate-level synthesis protocol |
+| `scripts/metrology_ch9.py` | Reproducible numerical metrology of Chapters 5 and 9 to `X = 2*10^8` (`python3 scripts/metrology_ch9.py`) |
 | `rtl/` | Synthesizable SystemVerilog for the Divider-less RNS-16 coprocessor: `ttp_dual_adder_cell.sv`, `ttp_phase_diode_rns16.sv`, `ttp_vector_landing_unit.sv` |
+| `rtl/tb/tb_ttp_rns16.sv` | Self-checking bit-exact testbench: `155 974` checks, `0` errors, `5 × 10 000` steps on `M_16 = 53#` |
+| `rtl/tb/synth_yosys.ys`, `rtl/tb/ref_div64_checker.sv` | Yosys synthesis script and 64-bit `%`-based reference checker |
 | `LICENSE` | Apache License 2.0, Copyright 2026 Andrei Lukianchikov |
 
 ## 6. Methodology & Formal Verification

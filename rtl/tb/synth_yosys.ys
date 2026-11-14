@@ -1,0 +1,44 @@
+# ============================================================================
+# synth_yosys.ys — gate-level synthesis audit for the TTP RNS-16 RTL
+#
+# Run from the repository root:
+#     yosys -s rtl/tb/synth_yosys.ys
+#
+# Flow: read_verilog -sv -> synth -> abc -g AND,OR,XOR,MUX -> stat -> ltp
+# ============================================================================
+
+# ----------------------------------------------------------------------------
+# 1. Dual-Adder cell, P = 53, W = 6
+# ----------------------------------------------------------------------------
+design -reset
+read_verilog -sv rtl/ttp_dual_adder_cell.sv
+synth -top ttp_dual_adder_cell
+flatten
+abc -g AND,OR,XOR,MUX
+opt_clean
+stat
+ltp -noff
+
+# ----------------------------------------------------------------------------
+# 2. Full 16-channel Phase-Diode core (M16 = 53# > 2^64)
+# ----------------------------------------------------------------------------
+design -reset
+read_verilog -sv rtl/ttp_dual_adder_cell.sv rtl/ttp_phase_diode_rns16.sv
+synth -top ttp_phase_diode_rns16
+flatten
+abc -g AND,OR,XOR,MUX
+opt_clean
+stat
+ltp -noff
+
+# ----------------------------------------------------------------------------
+# 3. Reference 64-bit divisibility checker (standard % operator)
+# ----------------------------------------------------------------------------
+design -reset
+read_verilog -sv rtl/tb/ref_div64_checker.sv
+synth -top ref_div64_checker
+flatten
+abc -g AND,OR,XOR,MUX
+opt_clean
+stat
+ltp -noff
