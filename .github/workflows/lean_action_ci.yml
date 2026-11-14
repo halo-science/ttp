@@ -21,20 +21,30 @@ jobs:
 
       - name: Add 4 GB swap
         run: |
-          sudo fallocate -l 4G /swapfile
-          sudo chmod 600 /swapfile
-          sudo mkswap /swapfile
-          sudo swapon /swapfile
+          sudo swapoff /swapfile-ttp 2>/dev/null || true
+          sudo rm -f /swapfile-ttp
+          sudo fallocate -l 4G /swapfile-ttp
+          sudo chmod 600 /swapfile-ttp
+          sudo mkswap /swapfile-ttp
+          sudo swapon /swapfile-ttp
           free -h
+          swapon --show
 
-      - name: Build TTP with Mathlib cache and bounded parallelism
+      - name: Set up Lean and restore GitHub cache
         uses: leanprover/lean-action@v1
         with:
           auto-config: "false"
-          build: "true"
-          build-args: "TTP -j 2"
+          build: "false"
           test: "false"
           lint: "false"
           mk_all-check: "false"
-          use-mathlib-cache: "true"
+          use-mathlib-cache: "false"
           use-github-cache: "true"
+
+      - name: Fetch Mathlib cache
+        run: lake exe cache get
+
+      - name: Build TTP with bounded parallelism
+        run: taskset -c 0-1 lake build TTP
+        env:
+          LEAN_NUM_THREADS: "2"
